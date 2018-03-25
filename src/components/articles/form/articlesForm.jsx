@@ -3,7 +3,7 @@ import { Field } from 'redux-form'
 import FormContainer from '../../common/form/formContainer'
 import {
 	TextField,
-	TextAreaField,
+	// TextAreaField,
 	FileStackField,
 	ToggleField,
 	DateField,

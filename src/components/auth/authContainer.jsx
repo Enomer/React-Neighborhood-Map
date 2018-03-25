@@ -17,7 +17,7 @@ class AuthContainer extends React.Component {
 
   checkExistingAuth(){
     const {asyncAction,history}   = this.props
-    const {user}          = this.props.users.auth
+    // const {user}          = this.props.users.auth
     const token           = localStorage.getItem('pi');
     if(token){
       asyncAction('token')
@@ -28,7 +28,7 @@ class AuthContainer extends React.Component {
 
   render(){
     const {children} = this.props
-    const {authorized,error} = this.props.users.auth
+    const {authorized} = this.props.users.auth
     if(!authorized) return null
     return children
   }

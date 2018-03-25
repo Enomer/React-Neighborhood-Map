@@ -8,7 +8,7 @@ import {TextField} from '../common/form/renderFields'
 import {required,email} from '../../helpers/validations'
 import { Field } from 'redux-form'
 
-const path = process.env.NODE_ENV==='development'?'http://localhost:3001':''
+// const path = process.env.NODE_ENV==='development'?'http://localhost:3001':''
 
 const Register = props => {
   return (

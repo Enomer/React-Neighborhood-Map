@@ -188,7 +188,7 @@ export class UploadPhoto extends React.Component {
       <div className="cell large-4 medium-6 small-12 app-item">
         <label htmlFor="exampleFileUpload" style={{margin:"auto"}} className="button expanded">Upload A Photo</label>
         <input type="file" id="exampleFileUpload" onChange={this.handleImageChange} className="show-for-sr"/>
-        <img src={this.state.receivedImage} />
+        {/* <img src={this.state.receivedImage} /> */}
       </div>
     )
   }
@@ -207,14 +207,14 @@ export class ColorPickerField extends React.Component {
 	}
 	render(){
 		const {label,input} = this.props
-		const {currentColor,pickerActive} = this.state
+		const {pickerActive} = this.state  //  <--- currentColor param,
 		return (
 			<div>
 				<div style={{fontSize:"85%"}}>{label}</div>
-				<div 
+				<div
 					style={{
 						boxShadow:"inset 0 1px 2px rgba(10, 10, 10, 0.1)",
-						border:"solid rgba(0,0,0,0.2) 1px", 
+						border:"solid rgba(0,0,0,0.2) 1px",
 						borderRadius:"3px",
 						padding:"7px",
 						cursor:"pointer",
