@@ -47,6 +47,7 @@
     "react-dev-utils": "^4.1.0",
     "react-dom": "^16.0.0",
     "react-flatpickr": "^3.6.3",
+    "react-google-maps": "^9.4.5",
     "react-onclickoutside": "^6.6.3",
     "react-quill": "^1.2.3",
     "react-redux": "^5.0.6",

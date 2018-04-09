@@ -1,69 +1,84 @@
 import React, { Component } from 'react'
-// import {Link} from 'react-router-dom'
+import {fetchApi} from '../fetch/fetch'
+const { compose, withStateHandlers } = require("recompose");
+const {
+  withScriptjs,
+  withGoogleMap,
+  GoogleMap,
+  Marker,
+  InfoWindow,
+} = require("react-google-maps");
 
 
-
-
-function createMapLink(url) {
-  let queryTag = window.document.getElementsByTagName('script')[0];
-  let script = window.document.createElement('script');
-  script.src = url;
-  script.async = true;
-  script.onerror = function () {
-    document.write("Google Maps can't be loaded");
-  };
-  queryTag.parentNode.insertBefore(script, queryTag);
+function callback(err, data) {
+    if (err) return
+    console.log(data)
 }
 
+let myRequest = new Request("https://api.foursquare.com/v2/venues/search?client_id=AOYEUOFSLDFJI2A0IRVLHJA0SS0TNS3W1P4AO5USMDJ4AVH2&client_secret=V1CLAGXDQEVMLMQZWCOUW5ROBT2C0SOXHPO2EBRSAUHEHVEH&ll=44.3,37.2&near=Chicago,%20IL&v=20180323")
+
+fetch(myRequest).then(response => {
+        if(response.ok){
+            response.json().then(data => {
+                callback(null,data)
+            })
+        } else {
+            callback(new Error("Response not OK"))
+        }
+    }).catch(error => {
+        console.log(error)
+        callback(error)
+    })
 
 
-
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.initMap = this.initMap.bind(this);
-  }
-
-
-  state = {
-    map: {}
-  }
-
-
-  componentDidMount() {
-    window.initMap = this.initMap;
-    createMapLink('https://maps.googleapis.com/maps/api/js?key=AIzaSyCbEXexX7QwrK14aGMnirWoG8sdJe2p8Ds&libraries=places&callback=initMap');
-  }
-
-
-  initMap() {
-    let self = this;
-    const  map = new window.google.maps.Map(document.getElementById('map'), {
-      center: {lat: 34.069208, lng: -118.402982 },
-      zoom:18
-    });
-    const infoWindow = new window.google.maps.InfoWindow({maxWidth: 300});
-    this.setState({
-      map: map
-    });
-    
-    window.google.maps.event.addDomListener(window, "resize", function () {
-      let mapCenter = map.getCenter();
-      window.google.maps.event.trigger(map, "resize");
-      self.state.map.setCenter(mapCenter);
-    });
-  }
+const MapWithAMakredInfoWindow = compose(
+  withStateHandlers(() => ({
+    isOpen: false,
+  }), {
+    onToggleOpen: ({ isOpen }) => () => ({
+      isOpen: !isOpen,
+    })
+  }),
+  withScriptjs,
+  withGoogleMap
+)(props =>
+  <GoogleMap
+    defaultZoom={16}
+    defaultCenter={{ lat: 34.146299, lng: -118.255005 }}
+    >
+      <Marker
+        position={{ lat: 34.145950, lng: -118.255216 }}
+        onClick={props.onToggleOpen}
+        > 
+          {props.isOpen && <InfoWindow onCloseClick={props.onToggleOpen}>
+            <div> gucci </div>
+          </InfoWindow>}
+        </Marker>
+      </GoogleMap>
+    );
 
 
-  render() {
-    return (
-      <main id="map-container">
-        <div id="map" role="application">
-        </div>
-      </main>
-    )
-  }
+    class Home extends Component {
 
-}
+      state = {
+        map: {}
+      }
+      componentDidMount() {
+      }
 
-export default Home
+      render() {
+
+        return (
+
+          <MapWithAMakredInfoWindow
+            googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbEXexX7QwrK14aGMnirWoG8sdJe2p8Ds"
+            loadingElement={<div style={{ height: `100%` }} />}
+            containerElement={<div style={{ height: `100vh` }} />}
+            mapElement={<div style={{ height: `100%` }} />}
+          />
+        )
+      }
+
+    }
+
+    export default Home
