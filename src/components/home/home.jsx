@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import {fetchApi} from '../fetch/fetch'
 const { compose, withStateHandlers } = require("recompose");
 const {
   withScriptjs,
@@ -10,30 +9,25 @@ const {
 } = require("react-google-maps");
 
 
-function callback(err, data) {
-    if (err) return
-    console.log(data)
+const callback = (err, data) => {
+  if (err) return
+  console.log(data)
 }
+const formatQueryString = objectofStuff =>  Object.keys(objectofStuff).map(key => key + '=' + objectofStuff[key]).join('&')
+const fourSquareRequest = params => "https://api.foursquare.com/v2/venues/search?" + formatQueryString({
+  client_id:"AOYEUOFSLDFJI2A0IRVLHJA0SS0TNS3W1P4AO5USMDJ4AVH2",
+  client_secret:"V1CLAGXDQEVMLMQZWCOUW5ROBT2C0SOXHPO2EBRSAUHEHVEH&ll=44.3,37.2",
+  v:20180323,
+  ...params
+})
 
-let myRequest = new Request("https://api.foursquare.com/v2/venues/search?client_id=AOYEUOFSLDFJI2A0IRVLHJA0SS0TNS3W1P4AO5USMDJ4AVH2&client_secret=V1CLAGXDQEVMLMQZWCOUW5ROBT2C0SOXHPO2EBRSAUHEHVEH&ll=44.3,37.2&near=Chicago,%20IL&v=20180323")
 
-fetch(myRequest).then(response => {
-        if(response.ok){
-            response.json().then(data => {
-                callback(null,data)
-            })
-        } else {
-            callback(new Error("Response not OK"))
-        }
-    }).catch(error => {
-        console.log(error)
-        callback(error)
-    })
 
 
 const MapWithAMakredInfoWindow = compose(
   withStateHandlers(() => ({
     isOpen: false,
+    hello:() => console.log('hello')
   }), {
     onToggleOpen: ({ isOpen }) => () => ({
       isOpen: !isOpen,
@@ -41,33 +35,60 @@ const MapWithAMakredInfoWindow = compose(
   }),
   withScriptjs,
   withGoogleMap
-)(props =>
-  <GoogleMap
-    defaultZoom={16}
-    defaultCenter={{ lat: 34.146299, lng: -118.255005 }}
-    >
-      <Marker
-        position={{ lat: 34.145950, lng: -118.255216 }}
-        onClick={props.onToggleOpen}
-        > 
-          {props.isOpen && <InfoWindow onCloseClick={props.onToggleOpen}>
-            <div> gucci </div>
-          </InfoWindow>}
-        </Marker>
-      </GoogleMap>
-    );
+)(props => {
+  console.log(props.hello())
+  return (
+    <GoogleMap
+      defaultZoom={16}
+      defaultCenter={{ lat: 34.146299, lng: -118.255005 }}
+      ref={ref => this.googleMap = ref}   // doesnt seem to work
+      {...props}
+      >
+        <Marker
+          position={{ lat: 34.145950, lng: -118.255216 }}
+          onClick={props.onToggleOpen}
+          >
+            {props.isOpen &&
+              <InfoWindow onCloseClick={props.onToggleOpen}>
+                <div> gucci </div>
+            </InfoWindow>}
+          </Marker>
+        </GoogleMap>
+      )
+    });
 
 
     class Home extends Component {
 
-      state = {
-        map: {}
-      }
       componentDidMount() {
+        if (navigator.geolocation) {
+          try {
+            navigator.geolocation.getCurrentPosition(position => {
+              const {latitude,longitude} = position.coords
+              const myRequest = fourSquareRequest({
+                ll:latitude+','+longitude
+              })
+              fetch(myRequest).then(response => {
+                if(response.ok){
+                  response.json().then(data => {
+                    this.googleMap && this.googleMap.panTo({lat:latitude,lng:longitude})  // seems that i cant reference the HOC
+                    callback(null,data)
+                  })
+                } else {
+                  callback(new Error("Response not OK"))
+                }
+              }).catch(error => {
+                console.log(error)
+                callback(error)
+              })
+            });
+          } catch(error){
+            console.log(error)
+          }
+        }
       }
 
       render() {
-
         return (
 
           <MapWithAMakredInfoWindow
