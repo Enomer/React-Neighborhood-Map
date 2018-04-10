@@ -23,7 +23,6 @@ const fourSquareRequest = params => "https://api.foursquare.com/v2/venues/search
 
 
 
-
 const MapWithAMakredInfoWindow = compose(
   withStateHandlers(() => ({
     isOpen: false,
@@ -36,70 +35,70 @@ const MapWithAMakredInfoWindow = compose(
   withScriptjs,
   withGoogleMap
 )(props => {
-  console.log(props.hello())
+
+
+
   return (
-    <GoogleMap
-      defaultZoom={16}
-      defaultCenter={{ lat: 34.146299, lng: -118.255005 }}
-      ref={ref => this.googleMap = ref}   // doesnt seem to work
-      {...props}
-      >
-        <Marker
-          position={{ lat: 34.145950, lng: -118.255216 }}
-          onClick={props.onToggleOpen}
-          >
-            {props.isOpen &&
-              <InfoWindow onCloseClick={props.onToggleOpen}>
-                <div> gucci </div>
-            </InfoWindow>}
-          </Marker>
-        </GoogleMap>
-      )
-    });
+    <div>
+      {window.navigator.geolocation.getCurrentPosition(position => {
+        const {latitude,longitude} = position.coords
+        const myRequest = fourSquareRequest({
+          ll:latitude+','+longitude
+        })
+        fetch(myRequest).then(response => {
+          if(response.ok){
+            response.json().then(data => {
+              this.googleMap && this.googleMap.panTo({lat:latitude,lng:longitude})
 
-
-    class Home extends Component {
-
-      componentDidMount() {
-        if (navigator.geolocation) {
-          try {
-            navigator.geolocation.getCurrentPosition(position => {
-              const {latitude,longitude} = position.coords
-              const myRequest = fourSquareRequest({
-                ll:latitude+','+longitude
-              })
-              fetch(myRequest).then(response => {
-                if(response.ok){
-                  response.json().then(data => {
-                    this.googleMap && this.googleMap.panTo({lat:latitude,lng:longitude})  // seems that i cant reference the HOC
-                    callback(null,data)
+              return (
+                <GoogleMap
+                  defaultZoom={16}
+                  defaultCenter={{ lat: 34.146299, lng: -118.255005 }}
+                  ref={ref => this.googleMap = ref}
+                  {...props}
+                  >
+                    {data.response.venues.filter( place => data.response.venues.indexOf(place) < 5 ).map( (nearbyPlace, i) =>
+                      <Marker
+                        key={i}
+                        position={{ lat : nearbyPlace.location.lat, lng: nearbyPlace.location.lng}}
+                        onClick={props.onToggleOpen}
+                        >
+                          {props.isOpen &&
+                            <InfoWindow onCloseClick={props.onToggleOpen}>
+                              <div> gucci </div>
+                            </InfoWindow>}
+                          </Marker>
+                        )}
+                      </GoogleMap>
+                    )
                   })
-                } else {
-                  callback(new Error("Response not OK"))
                 }
-              }).catch(error => {
-                console.log(error)
-                callback(error)
               })
-            });
-          } catch(error){
-            console.log(error)
+            })
           }
-        }
-      }
+        </div>
+      )
+    }
+  )
 
-      render() {
-        return (
 
-          <MapWithAMakredInfoWindow
-            googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbEXexX7QwrK14aGMnirWoG8sdJe2p8Ds"
-            loadingElement={<div style={{ height: `100%` }} />}
-            containerElement={<div style={{ height: `100vh` }} />}
-            mapElement={<div style={{ height: `100%` }} />}
-          />
-        )
-      }
+
+  class Home extends Component {
+
+    componentDidMount() {
 
     }
 
-    export default Home
+    render() {
+      return (
+        <MapWithAMakredInfoWindow
+          googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbEXexX7QwrK14aGMnirWoG8sdJe2p8Ds"
+          loadingElement={<div style={{ height: `100%` }} />}
+          containerElement={<div style={{ height: `100vh` }} />}
+          mapElement={<div style={{ height: `100%` }} />}
+        />
+      )
+    }
+  }
+
+  export default Home
