@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-const { compose, withStateHandlers, withProps} = require("recompose");
+const { compose, withStateHandlers} = require("recompose");
 const {
   withScriptjs,
   withGoogleMap,
@@ -11,7 +11,7 @@ const {
 
 const callback = (err, data) => {
   if (err) return
-  console.log(data)
+  console.log(`Venues Near You: ${data.response.venues.map(venue => `${venue.name}\n`).splice(0,5)}`)
 }
 const formatQueryString = objectofStuff =>  Object.keys(objectofStuff).map(key => key + '=' + objectofStuff[key]).join('&')
 const fourSquareRequest = params => "https://api.foursquare.com/v2/venues/search?" + formatQueryString({
@@ -23,17 +23,9 @@ const fourSquareRequest = params => "https://api.foursquare.com/v2/venues/search
 
 
 
-
 const MapWithAMakredInfoWindow = compose(
-  withProps({
-    googleMapURL: "https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places",
-    loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: `100vh` }} />,
-    mapElement: <div style={{ height: `100%` }} />,
-  }),
   withStateHandlers(() => ({
-    isOpen: false,
-    hello:() => console.log('hello')
+    isOpen: false
   }), {
     onToggleOpen: ({ isOpen }) => () => ({
       isOpen: !isOpen,
@@ -52,9 +44,13 @@ const MapWithAMakredInfoWindow = compose(
         <Marker
           position={{lat: 34.146291, lng: -118.255001}}
         />
-        {props.venues ? this.googleMap && this.googleMap.panTo({lat:props.mylat,lng:props.mylng}) : null}
+        {props.venues ? this.googleMap && this.googleMap.panTo({
+          lat:props.mylat,
+          lng:props.mylng
+        }) : null}
         { props.venues ?
           props.venues
+          .splice(0,5)
           .map( (v,i) =>
           <Marker
             key={i}
@@ -87,7 +83,7 @@ const MapWithAMakredInfoWindow = compose(
     fetchApi = () => {
       if (navigator.geolocation) {
         try {
-          console.log('navigator detected')
+          console.log('Getting Current Location')
           navigator.geolocation.getCurrentPosition(position => {
             const {latitude,longitude} = position.coords
             this.setState({
@@ -97,7 +93,6 @@ const MapWithAMakredInfoWindow = compose(
             const myRequest = fourSquareRequest({
               ll:latitude+','+longitude
             })
-            console.log('bandos')
             fetch(myRequest).then(response => {
               if(response.ok){
                 response.json().then(data => {
@@ -115,7 +110,7 @@ const MapWithAMakredInfoWindow = compose(
             })
           }, err => {
             // window.location.reload()
-            console.warn(`ERROR(${err.code}): ${err.message}`)
+            console.warn(`ERROR(${err.code}): ${err.message} ... reinitiliazing`)
             return this.fetchApi()
           },
           {
@@ -126,27 +121,24 @@ const MapWithAMakredInfoWindow = compose(
         } catch(error){
           console.log(error)
         }
-      } else {
-        console.log('navigator gielnor')
       }
     }
 
     componentDidMount() {
-      console.log('gucci')
       this.fetchApi()
     }
 
     render() {
+      const {venues, mylat, mylng} = this.state
       return (
-
         <MapWithAMakredInfoWindow
           googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbEXexX7QwrK14aGMnirWoG8sdJe2p8Ds"
           loadingElement={<div style={{ height: `100%` }} />}
           containerElement={<div style={{ height: `100vh` }} />}
           mapElement={<div style={{ height: `100%` }} />}
-          venues={this.state.venues}
-          mylat={this.state.mylat}
-          mylng={this.state.mylng}
+          venues={venues}
+          mylat={mylat}
+          mylng={mylng}
         />
       )
     }
