@@ -26,7 +26,7 @@ export default class GoogleMarker extends Component {
         >
           {isOpen &&
             <InfoWindow onCloseClick={this.onToggleOpen}>
-              <div> gucci </div>
+              <div> {this.props.placeName} </div>
             </InfoWindow>
           }
         </Marker>

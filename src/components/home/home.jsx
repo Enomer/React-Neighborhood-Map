@@ -7,7 +7,6 @@ const {
   withGoogleMap,
   GoogleMap,
   Marker,
-  // InfoWindow,
 } = require("react-google-maps");
 
 
@@ -44,15 +43,14 @@ const MapWithAMakredInfoWindow = compose(
           lat:props.mylat,
           lng:props.mylng
         }) : null}
-        { props.venues ?
-          props.venues
-          .splice(0,8)
+        { props.placesInfo ?
+          props.placesInfo
           .map( (v,i) =>
           <GoogleMarker
             key={i}
-            markerLat={v.location.lat}
-            markerLng={v.location.lng}
-            toggleWindow={props.onToggleOpen}
+            markerLat={ v[1] }
+            markerLng={ v[2] }
+            placeName = { v[0] }
           />
         )
         :
@@ -70,8 +68,8 @@ class Home extends Component {
     mylat: null,
     mylng: null,
     placeId: null,
-    venueName: null,
     inputChar: '',
+    venueInfo: null
   }
 
 //   fetchPhoto = () => {
@@ -112,9 +110,9 @@ fetchApi = () => {
             response.json().then(data => {
               console.log(data.response.venues)
               this.setState({
-                venues: data.response.venues,
-                placeId: data.response.venues.splice(0,8).map((ven) => ven.id),
-                venueName: data.response.venues.splice(0,8).map((ven) => ven.name),
+                venues: data.response.venues.splice(0,8),
+                placeId: data.response.venues.map(ven => ven.id),
+                venueInfo: data.response.venues.splice(0,8).map(ven => [ven.name, ven.location.lat, ven.location.lng]),
               })
 
               callback(null,data)
@@ -148,20 +146,23 @@ componentDidMount() {
 }
 
 render() {
-  const {venues, mylat, mylng, inputChar, venueName} = this.state
-  let placesShown = venueName;
+  const {venues, mylat, mylng, inputChar, venueInfo} = this.state
+  let placesInfo = null;
+    if (venueInfo) {
+      placesInfo = venueInfo
+    }
+
     if (inputChar)  {
       const match = new RegExp(escapeRegExp(inputChar), 'i')
-      placesShown = venueName.filter(
-        (place) => match.test(place)
+      placesInfo = venueInfo.filter(
+        (place) => match.test(place[0])
       )
     } else {
-      placesShown = venueName
+      placesInfo = venueInfo
     }
   return (
     <main>
       <section id="sidePane">
-        {/* {setTimeout(() => this.fetchPhoto(), 5000)} */}
         <h2 style={{display: 'flex', textAlign: 'center'}}>Locations Near You</h2>
           <input
             style={{display: 'flex', margin: 'auto'}}
@@ -173,13 +174,16 @@ render() {
             }
           />
         <ul>
-          {/* {console.log(venueName)} */}
-          {placesShown ?
-            placesShown.map( (v,i) =>
-              <li key={i} >
-                  <hr></hr>
-                <p>{placesShown[i]}</p>
-              </li>
+
+          {venueInfo ?
+            placesInfo.map( (v,i) => {
+                return (
+                  <li key={i} >
+                      <hr></hr>
+                    <p>{placesInfo.map(v => v[0])[i]}</p>
+                  </li>
+                )
+              }
             )
             :
             null}
@@ -193,6 +197,7 @@ render() {
         venues={venues}
         mylat={mylat}
         mylng={mylng}
+        placesInfo = {placesInfo}
       />
     </main>
     )
