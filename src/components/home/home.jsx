@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import GoogleMarker from './infowindow'
+import escapeRegExp from 'escape-string-regexp';
 const { compose } = require("recompose");
 const {
   withScriptjs,
@@ -68,25 +69,30 @@ class Home extends Component {
     venues: null,
     mylat: null,
     mylng: null,
-    placeId: null
+    placeId: null,
+    venueName: null,
+    inputChar: '',
   }
 
-  fetchPhoto = () => {
-    if (this.state.placeId === true) {
-      fetch(
-        fourSquareRequest( `${this.state.placeId[4]}/photos`  , {
-          limit: 2
-        })
-      ).then(response => {
-        // console.log(response)
-          response.json().then(data => {
-            console.log(data)
-          }
-        )
-    })
-  }
-}
+//   fetchPhoto = () => {
+//     if (this.state.placeId) {
+//       fetch(
+//         fourSquareRequest( `${this.state.placeId[4]}/photos`  , {
+//           limit: 2
+//         })
+//       ).then(response => {
+//         // console.log(response)
+//           response.json().then(data => {
+//             console.log(data)
+//           }
+//         )
+//     })
+//   }
+// }
 
+inputDetect = (query) => {
+        this.setState({ inputChar: query })
+      }
 
 fetchApi = () => {
   if (navigator.geolocation) {
@@ -104,12 +110,13 @@ fetchApi = () => {
         fetch(myRequest).then(response => {
           if(response.ok){
             response.json().then(data => {
-              // console.log(data)
+              console.log(data.response.venues)
               this.setState({
                 venues: data.response.venues,
-                placeId: data.response.venues.splice(0,8).map((ven) => ven.id)
+                placeId: data.response.venues.splice(0,8).map((ven) => ven.id),
+                venueName: data.response.venues.splice(0,8).map((ven) => ven.name),
               })
-              console.log(this.state.placeId[4])
+
               callback(null,data)
             })
           } else {
@@ -127,7 +134,7 @@ fetchApi = () => {
       {
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 0
+        maximumAge: 60000
       })
     } catch(error){
       console.log(error)
@@ -141,57 +148,55 @@ componentDidMount() {
 }
 
 render() {
-  const {venues, mylat, mylng} = this.state
+  const {venues, mylat, mylng, inputChar, venueName} = this.state
+  let placesShown = venueName;
+    if (inputChar)  {
+      const match = new RegExp(escapeRegExp(inputChar), 'i')
+      placesShown = venueName.filter(
+        (place) => match.test(place)
+      )
+    } else {
+      placesShown = venueName
+    }
   return (
     <main>
       <section id="sidePane">
         {/* {setTimeout(() => this.fetchPhoto(), 5000)} */}
-        <h1>Locations Near You</h1>
+        <h2 style={{display: 'flex', textAlign: 'center'}}>Locations Near You</h2>
+          <input
+            style={{display: 'flex', margin: 'auto'}}
+            type="text"
+            placeholder="Search Place"
+            value={inputChar}
+            onChange={(event) => {
+              this.inputDetect(event.target.value)}
+            }
+          />
         <ul>
-          {venues ?
-            venues.map( (v,i) =>
-            //   const photoFetch = fourSquareRequest( `${v.id}/photos`  , {
-            //   limit: 2
-            // })
-            //   return (
-            <li key={i}>
-              {/* {
-                fetch(
-                fourSquareRequest( `${v.id}/photos`, {limit: 2})
-              ).then(response => {
-              if(response.ok){
-              response.json().then(data => {
-              console.log(data)
-            })
-          } else {
-          callback(new Error("Response not OK"))
-        }
-      }).catch(error => {
-      console.log(error)
-      callback(error)
-    })
-
-  } */}
-</li>
-)
-// )
-:
-null}
-</ul>
-</section>
-<MapWithAMakredInfoWindow
-  googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbEXexX7QwrK14aGMnirWoG8sdJe2p8Ds"
-  loadingElement={<div style={{ height: `100%` }} />}
-  containerElement={<div style={{ height: `100vh` }} />}
-  mapElement={<div style={{ height: `100%` }} />}
-  venues={venues}
-  mylat={mylat}
-  mylng={mylng}
-/>
-</main>
-)
-}
-
+          {/* {console.log(venueName)} */}
+          {placesShown ?
+            placesShown.map( (v,i) =>
+              <li key={i} >
+                  <hr></hr>
+                <p>{placesShown[i]}</p>
+              </li>
+            )
+            :
+            null}
+        </ul>
+      </section>
+      <MapWithAMakredInfoWindow
+        googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbEXexX7QwrK14aGMnirWoG8sdJe2p8Ds"
+        loadingElement={<div style={{ height: `100%` }} />}
+        containerElement={<div style={{ height: `100vh` }} />}
+        mapElement={<div style={{ height: `100%` }} />}
+        venues={venues}
+        mylat={mylat}
+        mylng={mylng}
+      />
+    </main>
+    )
+  }
 }
 
 export default Home
