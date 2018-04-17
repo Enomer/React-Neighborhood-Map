@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import GoogleMarker from './infowindow'
+import PhotoFetch from './photoFetch'
 import escapeRegExp from 'escape-string-regexp';
 const { compose } = require("recompose");
 const {
@@ -8,17 +9,19 @@ const {
   GoogleMap,
   Marker,
 } = require("react-google-maps");
-
+const fancyMapStyles = require("./fancyMapStyles.json");
 
 
 const callback = (err, data) => {
+  // if (data) return
+  // console.log(`Venues Near You: ${data.response.venues.map(venue => `${venue.name}\n`).splice(0,8)}`)
   if (err) return
-  console.log(`Venues Near You: ${data.response.venues.map(venue => `${venue.name}\n`).splice(0,8)}`)
+  console.log(`error occured: ${err}`)
 }
 const formatQueryString = objectofStuff =>  Object.keys(objectofStuff).map(key => key + '=' + objectofStuff[key]).join('&')
 const fourSquareRequest = (type, params) => "https://api.foursquare.com/v2/venues/" + type + "?" + formatQueryString({
   client_id:"AOYEUOFSLDFJI2A0IRVLHJA0SS0TNS3W1P4AO5USMDJ4AVH2",
-  client_secret:"V1CLAGXDQEVMLMQZWCOUW5ROBT2C0SOXHPO2EBRSAUHEHVEH",
+  client_secret:"WETOABHTGSZHAJJOXQIJPDEQ52ETJLLMJVJOE4JZVHSEWHDZ",
   v:20180323,
   ...params
 })
@@ -33,6 +36,7 @@ const MapWithAMakredInfoWindow = compose(
     <GoogleMap
       defaultZoom={16}
       defaultCenter={{lat: props.mylat || 34.146299, lng: props.mylng || -118.255005 }}
+      defaultOptions={{ styles: fancyMapStyles }}
       ref={ref => this.googleMap = ref}
       {...props}
       >
@@ -48,9 +52,9 @@ const MapWithAMakredInfoWindow = compose(
           .map( (v,i) =>
           <GoogleMarker
             key={i}
+            placeName = { v[0] }
             markerLat={ v[1] }
             markerLng={ v[2] }
-            placeName = { v[0] }
           />
         )
         :
@@ -67,26 +71,12 @@ class Home extends Component {
     venues: null,
     mylat: null,
     mylng: null,
-    placeId: null,
     inputChar: '',
-    venueInfo: null
+    venueInfo: null,
+    photoInfo: null
   }
 
-//   fetchPhoto = () => {
-//     if (this.state.placeId) {
-//       fetch(
-//         fourSquareRequest( `${this.state.placeId[4]}/photos`  , {
-//           limit: 2
-//         })
-//       ).then(response => {
-//         // console.log(response)
-//           response.json().then(data => {
-//             console.log(data)
-//           }
-//         )
-//     })
-//   }
-// }
+
 
 inputDetect = (query) => {
         this.setState({ inputChar: query })
@@ -108,12 +98,25 @@ fetchApi = () => {
         fetch(myRequest).then(response => {
           if(response.ok){
             response.json().then(data => {
-              console.log(data.response.venues)
+              // console.log(data.response.venues)
               this.setState({
                 venues: data.response.venues.splice(0,8),
-                placeId: data.response.venues.map(ven => ven.id),
-                venueInfo: data.response.venues.splice(0,8).map(ven => [ven.name, ven.location.lat, ven.location.lng]),
+                venueInfo: data.response.venues.splice(0,8).map(ven => [ven.name, ven.location.lat, ven.location.lng, ven.id]),
               })
+
+            //   this.state.venueInfo.map((v,i) =>
+            //   fetch(
+            //     this.props.fourSquareRequest( `${v[3]}/photos`  , {
+            //       limit: 2
+            //     })
+            //   ).then(response => {
+            //       response.json().then(data =>
+            //         this.setState({
+            //           photoInfo: data
+            //         })
+            //     )
+            // })
+            // )
 
               callback(null,data)
             })
@@ -162,25 +165,30 @@ render() {
     }
   return (
     <main>
-      <section id="sidePane">
-        <h2 style={{display: 'flex', textAlign: 'center'}}>Locations Near You</h2>
+      <section className="grid-x">
+        <div id="sidePane" className="align-center cell large-3 medium-4 small-4">
+          <h2 >Locations Near You</h2>
           <input
-            style={{display: 'flex', margin: 'auto'}}
             type="text"
             placeholder="Search Place"
             value={inputChar}
             onChange={(event) => {
-              this.inputDetect(event.target.value)}
-            }
-          />
-        <ul>
+              this.inputDetect(event.target.value)}}
+            />
 
+        <ul>
           {venueInfo ?
             placesInfo.map( (v,i) => {
                 return (
                   <li key={i} >
                       <hr></hr>
                     <p>{placesInfo.map(v => v[0])[i]}</p>
+
+                    <PhotoFetch
+                      fourSquareRequest={fourSquareRequest}
+                      v={v}
+                    />
+
                   </li>
                 )
               }
@@ -188,6 +196,7 @@ render() {
             :
             null}
         </ul>
+        </div>
       </section>
       <MapWithAMakredInfoWindow
         googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbEXexX7QwrK14aGMnirWoG8sdJe2p8Ds"
@@ -203,5 +212,6 @@ render() {
     )
   }
 }
+
 
 export default Home

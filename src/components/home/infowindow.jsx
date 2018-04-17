@@ -21,6 +21,10 @@ export default class GoogleMarker extends Component {
     return (
 
       <Marker
+          // icon={{
+          //   // url: "http://www.clker.com/cliparts/g/9/4/c/Y/0/orange-map-pin.svg"
+          //   // anchor: iconAnchor
+          // }}
         position={{ lat: markerLat, lng: markerLng }}
         onClick={() => this.setState({isOpen: !isOpen})}
         >
