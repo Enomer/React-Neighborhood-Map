@@ -4,28 +4,29 @@ const {
   InfoWindow,
 } = require("react-google-maps");
 
+/*global google*/
 
 export default class GoogleMarker extends Component {
 
   state = {
     isOpen: false,
-    photoInfo: null
+    photoInfo: null,
+    locationType: null
   }
 
   onToggleOpen = ()  => {
-
-  console.log('hello')
 if (!this.state.photoInfo) {
  fetch(
-   this.props.fourSquareRequest( `${this.props.v[3]}/photos`  , {
+   this.props.fourSquareRequest( `${this.props.v[3]}`  , {
      limit: 2
    })
  ).then(response => {
      response.json().then(data => {
        this.setState({
-         photoInfo: data.response.photos.items[0]
+         photoInfo: data.response.venue.photos.groups.length ? data.response.venue.photos.groups[0].items[0] : null,
+         locationType: data.response.venue.categories[0] ? data.response.venue.categories[0].name : null
        })
-       console.log(data.response.photos)
+       console.log(data.response.venue.categories[0] ? console.log('yes') : console.log('no'))
      }
    )
 })
@@ -37,27 +38,38 @@ this.setState({
 
   render() {
     const { markerLat, markerLng} = this.props
-    const { isOpen, photoInfo } = this.state
+    const { isOpen, photoInfo, locationType } = this.state
     return (
 
       <Marker
         position={{ lat: markerLat, lng: markerLng }}
+        defaultAnimation={google.maps.Animation.DROP}
         onClick={this.onToggleOpen}
         icon={{
         url:"http://www.myiconfinder.com/uploads/iconsets/48-48-7a195b78d9607a48fb234f98634fa5ea-pin.png"
         }}
-        style={{height: '75px', width: '75px'}}
         >
+
           {isOpen &&
             <InfoWindow
                 onCloseClick={() => this.setState({isOpen: !isOpen})}
-                style={{background: 'orange', color: 'orange'}}
+                style={{background: 'orange', color: 'orange' }}
               >
-              <div className="grid-x align-middle align-center text-center">
+              <div
+                className="grid-x align-middle align-center text-center"
+                style={{maxWidth: '250px'}}
+                >
               <h5 className="cell">
                 {this.props.placeName}
               </h5>
-                {photoInfo ?
+                {
+                  locationType ?
+                  <h6 className="cell">{locationType}</h6>
+                  :
+                  null
+                }
+                {
+                  photoInfo ?
                  <img
                    className="cell"
                    alt={photoInfo.source.name}
@@ -65,7 +77,8 @@ this.setState({
                    style={{maxHeight:'200px', maxWidth:'200px'}}
                  />
                  :
-                 null}
+                 null
+               }
               </div>
             </InfoWindow>
           }

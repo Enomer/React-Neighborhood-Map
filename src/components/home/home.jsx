@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import GoogleMarker from './infowindow'
-// import PhotoFetch from './photoFetch'
 import escapeRegExp from 'escape-string-regexp';
 const { compose } = require("recompose");
 const {
@@ -10,7 +9,6 @@ const {
   Marker,
 } = require("react-google-maps");
 const fancyMapStyles = require("./fancyMapStyles.json");
-
 
 const callback = (err, data) => {
   // if (data) return
@@ -154,8 +152,8 @@ render() {
   return (
     <main>
       <section className="grid-x">
-        <div id="sidePane" className="align-center cell large-3 medium-4 small-4">
-          <h2 >Locations Near You</h2>
+        <div style={{padding: '25px'}} id="sidePane" className="align-center cell large-3 medium-4 small-4">
+          <h2 style={{textAlign: 'center', color: '#1f8a70'}}>Locations Near You</h2>
           <input
             type="text"
             placeholder="Search Place"
@@ -165,20 +163,20 @@ render() {
             />
 
         <ul>
-          {venueInfo ?
+          {
+            venueInfo ?
             placesInfo.map( (v,i) => {
                 return (
                   <li key={i} >
                       <hr></hr>
-                    <p>{placesInfo.map(v => v[0])[i]}</p>
-
-
+                    <p id="placesInfo">{placesInfo.map(v => v[0])[i]}</p>
                   </li>
                 )
               }
             )
             :
-            null}
+            null
+          }
         </ul>
         </div>
       </section>
