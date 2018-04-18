@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import GoogleMarker from './infowindow'
-import PhotoFetch from './photoFetch'
+// import PhotoFetch from './photoFetch'
 import escapeRegExp from 'escape-string-regexp';
 const { compose } = require("recompose");
 const {
@@ -55,6 +55,8 @@ const MapWithAMakredInfoWindow = compose(
             placeName = { v[0] }
             markerLat={ v[1] }
             markerLng={ v[2] }
+            fourSquareRequest={ fourSquareRequest }
+            v={ v }
           />
         )
         :
@@ -93,30 +95,17 @@ fetchApi = () => {
           mylng: longitude
         })
         const myRequest = fourSquareRequest("search", {
-          ll:latitude+','+longitude
+          ll:latitude+','+longitude,
+          venuePhotos:1,
+          venuephotos:"1"
         })
         fetch(myRequest).then(response => {
           if(response.ok){
             response.json().then(data => {
-              // console.log(data.response.venues)
               this.setState({
                 venues: data.response.venues.splice(0,8),
                 venueInfo: data.response.venues.splice(0,8).map(ven => [ven.name, ven.location.lat, ven.location.lng, ven.id]),
               })
-
-            //   this.state.venueInfo.map((v,i) =>
-            //   fetch(
-            //     this.props.fourSquareRequest( `${v[3]}/photos`  , {
-            //       limit: 2
-            //     })
-            //   ).then(response => {
-            //       response.json().then(data =>
-            //         this.setState({
-            //           photoInfo: data
-            //         })
-            //     )
-            // })
-            // )
 
               callback(null,data)
             })
@@ -128,7 +117,6 @@ fetchApi = () => {
           callback(error)
         })
       }, err => {
-        // window.location.reload()
         console.warn(`ERROR(${err.code}): ${err.message} ... reinitiliazing`)
         return this.fetchApi()
       },
@@ -184,10 +172,6 @@ render() {
                       <hr></hr>
                     <p>{placesInfo.map(v => v[0])[i]}</p>
 
-                    <PhotoFetch
-                      fourSquareRequest={fourSquareRequest}
-                      v={v}
-                    />
 
                   </li>
                 )
