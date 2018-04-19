@@ -2,7 +2,7 @@
 
 # Project Overview
 
-This single-page application uses React-google-maps and recompose library to render a map onscreen of your * current location * and retrieve 8 locations nearby. The page features 8 map markers of locations near you using the * four square API * , these markers can then be clicked on to reveal further information of these nearby places including a photo and type of place. There is a side pane which will  list the names of the 8 locations and a search box to filter through only the name(s) and the corresponding map marker(s) you wish to see. 
+This single-page application uses React-google-maps and recompose library to render a map onscreen of your **current location** and retrieve 8 locations nearby. The page features 8 map markers of locations near you using the **Foursquare API** , these markers can then be clicked on to reveal further information of these nearby places including a photo and type of place. There is a side pane which will  list the names of the 8 locations and a search box to filter through only the name(s) and the corresponding map marker(s) you wish to see. 
 
 # To Get Started
 
