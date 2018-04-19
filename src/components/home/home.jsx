@@ -14,7 +14,7 @@ const callback = (err, data) => {
   // if (data) return
   // console.log(`Venues Near You: ${data.response.venues.map(venue => `${venue.name}\n`).splice(0,8)}`)
   if (err) return
-  console.log(`error occured: ${err}`)
+  console.log(`${err}`)
 }
 const formatQueryString = objectofStuff =>  Object.keys(objectofStuff).map(key => key + '=' + objectofStuff[key]).join('&')     // API Request my auth tokens
 const fourSquareRequest = (type, params) => "https://api.foursquare.com/v2/venues/" + type + "?" + formatQueryString({
@@ -32,7 +32,7 @@ const MapWithAMakredInfoWindow = compose(   // Higher Order Component for my goo
 )(props => {
   return (
     <GoogleMap
-      defaultZoom={16}
+      defaultZoom={17}
       defaultOptions={{
         styles: fancyMapStyles,
         streetViewControl: false,
@@ -40,16 +40,13 @@ const MapWithAMakredInfoWindow = compose(   // Higher Order Component for my goo
         mapTypeControl: false,
         fullscreenControl: false
       }}
-      defaultCenter={{lat: props.mylat || 34.146299, lng: props.mylng || -118.255005 }}  // defaults to this location while map fetches your current location
+      defaultCenter={{lat: 34.146299, lng: -118.255005 }}  // defaults to this location while map fetches your current location
       ref={ref => this.googleMap = ref}
       {...props}
       >
-        <Marker
-          position={{lat: 34.146291, lng: -118.255001}}
-        />
         {props.venues ? this.googleMap && this.googleMap.panTo({  // Goes to location of your current location once it loads
-          lat:props.mylat,
-          lng:props.mylng
+          lat:34.146299,
+          lng:-118.255001
         }) : null}
         { props.placesInfo ?    // Render 8 map markers of places nearby to your current location
           props.placesInfo
@@ -75,8 +72,6 @@ class Home extends Component {
 
   state = {
     venues: null,   // manages list of the 8 venues nearest to your
-    mylat: null,  // your latitude
-    mylng: null,    // your longitude
     inputChar: '',   // manages the search box state
     venueInfo: null,  // manages info of the venues useful info
     checked: false    // manages whether side pane is open or not
@@ -90,20 +85,10 @@ class Home extends Component {
 
 
   fetchApi = () => {
-    if (navigator.geolocation) {    // finds your current location and stores it in state
-      try {     // try catch for errors
-        console.log('Getting Current Location')
-        navigator.geolocation.getCurrentPosition(position => {
-          const {latitude,longitude} = position.coords
-          this.setState({
-            mylat:  latitude,
-            mylng: longitude
-          })
           const myRequest = fourSquareRequest("search", {   // fetch request to foursquare api with parameters
-            ll:latitude+','+longitude
+            ll:34.146299+','+-118.255005
           })
           fetch(myRequest).then(response => {
-            if(response.ok){
               response.json().then(data => {
                 this.setState({
                   venues: data.response.venues.splice(0,8),
@@ -112,31 +97,14 @@ class Home extends Component {
 
                 callback(null,data)
               })
-            } else {
-              callback(new Error("Response not OK"))
-            }
           }).catch(error => {
             console.log(error)
             callback(error)
           })
-        }, err => {
-          console.warn(`ERROR(${err.code}): ${err.message} ... reinitiliazing`)
-          return this.fetchApi()
-        },
-        {
-          enableHighAccuracy: true,   // trying to get geolocation to work on every refresh
-          timeout: 10000,
-          maximumAge: 60000
-        })
-      } catch(error){
-        console.log(error)
-      }
-    }
-  }
-
+        }
 
   componentDidMount() {
-    this.fetchApi()   // invokes the fetch call on component mount
+    this.fetchApi()
   }
 
   render() {
@@ -204,8 +172,6 @@ class Home extends Component {
             containerElement={<div style={{ height: `100vh` }} />}
             mapElement={<div style={{ height: `100%` }} />}
             venues={venues}
-            mylat={mylat}
-            mylng={mylng}
             placesInfo = {placesInfo}
           />
         </div>
