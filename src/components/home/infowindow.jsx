@@ -31,6 +31,7 @@ if (!this.state.photoInfo) {
    )
 })
 }
+
 this.setState({
   isOpen: !this.state.isOpen
 })
@@ -49,7 +50,6 @@ this.setState({
         url:"http://www.myiconfinder.com/uploads/iconsets/48-48-7a195b78d9607a48fb234f98634fa5ea-pin.png"
         }}
         >
-
           {isOpen &&
             <InfoWindow
                 onCloseClick={() => this.setState({isOpen: !isOpen})}

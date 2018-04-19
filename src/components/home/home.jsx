@@ -33,8 +33,14 @@ const MapWithAMakredInfoWindow = compose(
   return (
     <GoogleMap
       defaultZoom={16}
+      defaultOptions={{
+      styles: fancyMapStyles,
+      streetViewControl: false,
+      scaleControl: false,
+      mapTypeControl: false,
+      fullscreenControl: false
+    }}
       defaultCenter={{lat: props.mylat || 34.146299, lng: props.mylng || -118.255005 }}
-      defaultOptions={{ styles: fancyMapStyles }}
       ref={ref => this.googleMap = ref}
       {...props}
       >
@@ -73,7 +79,8 @@ class Home extends Component {
     mylng: null,
     inputChar: '',
     venueInfo: null,
-    photoInfo: null
+    photoInfo: null,
+    checked: false
   }
 
 
@@ -81,6 +88,7 @@ class Home extends Component {
 inputDetect = (query) => {
         this.setState({ inputChar: query })
       }
+
 
 fetchApi = () => {
   if (navigator.geolocation) {
@@ -135,7 +143,7 @@ componentDidMount() {
 }
 
 render() {
-  const {venues, mylat, mylng, inputChar, venueInfo} = this.state
+  const {venues, mylat, mylng, inputChar, venueInfo, checked} = this.state
   let placesInfo = null;
     if (venueInfo) {
       placesInfo = venueInfo
@@ -151,9 +159,13 @@ render() {
     }
   return (
     <main>
-      <section className="grid-x">
-        <div style={{padding: '25px'}} id="sidePane" className="align-center cell large-3 medium-4 small-4">
-          <h2 style={{textAlign: 'center', color: '#1f8a70'}}>Locations Near You</h2>
+
+      <ul className="navigation">
+
+
+      <section  className="grid-x">
+        <div id="sidePane" className="align-center cell large-3 medium-4 small-4">
+          <h2 style={{textAlign: 'center', color: '#1f8a70', fontWeight: 'bold'}}>Locations Near You</h2>
           <input
             type="text"
             placeholder="Search Place"
@@ -167,7 +179,11 @@ render() {
             venueInfo ?
             placesInfo.map( (v,i) => {
                 return (
-                  <li key={i} >
+                  <li onClick={() =>
+                    this.setState({
+                      checked: !checked
+                    })
+                  } className="nav-item" key={i} >
                       <hr></hr>
                     <p id="placesInfo">{placesInfo.map(v => v[0])[i]}</p>
                   </li>
@@ -180,6 +196,12 @@ render() {
         </ul>
         </div>
       </section>
+
+      </ul>
+      <input onClick={() => this.setState({checked: !checked})} type="checkbox" checked={checked} id="nav-trigger" className="nav-trigger" />
+      <label htmlFor="nav-trigger"></label>
+
+<div className="site-wrap">
       <MapWithAMakredInfoWindow
         googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbEXexX7QwrK14aGMnirWoG8sdJe2p8Ds"
         loadingElement={<div style={{ height: `100%` }} />}
@@ -190,6 +212,7 @@ render() {
         mylng={mylng}
         placesInfo = {placesInfo}
       />
+      </div>
     </main>
     )
   }
