@@ -22,8 +22,8 @@ ul {
 }
 #placesInfo {
   cursor: pointer;
-  font-size: 21px;
-  padding: 1rem;
+  font-size: 18px;
+  padding: 5px;
   @include breakpoint(small only) {
   font-size: 15px;
   padding: 0 !important;
