@@ -15,7 +15,7 @@ export default class GoogleMarker extends Component {
   }
 
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps) {  // this will make the side pane name clicked activate the corresponding name's google marker info window, opening it
    if (nextProps.activeIndex !== this.props.activeIndex) {
     if (nextProps.activeIndex === this.props.index) {
      this.onToggleOpen()
@@ -33,14 +33,14 @@ export default class GoogleMarker extends Component {
         response.json().then(data => {
           this.setState({
             photoInfo: data.response.venue.photos.groups.length ? data.response.venue.photos.groups[0].items[0] : null,
-            locationType: data.response.venue.categories[0] ? data.response.venue.categories[0].name : null
+            locationType: data.response.venue.categories[0] ? data.response.venue.categories[0].pluralName : null
           })
         }
       )
     })
   }
   this.setState({
-    isOpen: !this.state.isOpen   // i dont know how i can make this info window of the marker corresponding to the side pane name open when that particular side pane name is clicked
+    isOpen: !this.state.isOpen
   })
 }
 
@@ -51,10 +51,9 @@ render() {
 
     <Marker
       position={{ lat: markerLat, lng: markerLng }}
-      defaultAnimation={google.maps.Animation.DROP}   // i have no clue how to animate bounce on click with react google maps couldnt find an answer anywhere
+      defaultAnimation={google.maps.Animation.DROP}
       onClick={this.onToggleOpen}
-      // className={isOpen ? "pulseDrag" : null}
-      className="pulseDrag"
+      style={{overflow: 'hidden'}}
       icon={{
         url:"http://www.myiconfinder.com/uploads/iconsets/48-48-7a195b78d9607a48fb234f98634fa5ea-pin.png"
       }}
@@ -64,7 +63,7 @@ render() {
             onCloseClick={() => this.setState({isOpen: !isOpen})}
             >
               <div
-                className="grid-x align-middle align-center text-center"
+                className={"grid-x align-middle align-center text-center" + isOpen ? "pulseDrag" : null}
                 style={{maxWidth: '250px'}}
                 >
                   <h5 className="cell">
@@ -78,9 +77,10 @@ render() {
                   }
                   {
                     photoInfo ?
+
                     <img
                       className="cell"
-                      alt={photoInfo.source.name}    // type of category listed in inventory window
+                      alt={locationType ? locationType : null}    // type of category listed in inventory window
                       src={`${photoInfo.prefix}${photoInfo.height}x${photoInfo.width}${photoInfo.suffix}`}   // renders photo stored in state when fetch call is made for it
                       style={{maxHeight:'200px', maxWidth:'200px'}}
                     />

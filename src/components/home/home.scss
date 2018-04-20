@@ -57,9 +57,8 @@ hr {
 }
 
 .pulseDrag {
-	animation: bounceIn 1s ease-in-out infinite;
+	animation: zoomIn 3s ease-in-out !important;
 }
-
 
 
 /* Navigation Menu - Background */
@@ -90,6 +89,7 @@ hr {
   display: block;
   padding: 1em;
   font-size: 1.2em;
+  cursor: pointer;
   text-decoration: none;
   transition: color 0.2s, background 0.5s;
 }
@@ -136,6 +136,7 @@ label[for="nav-trigger"] {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' x='0px' y='0px' width='30px' height='30px' viewBox='0 0 30 30' enable-background='new 0 0 30 30' xml:space='preserve'><rect width='30' fill='#fd7400' height='6'/><rect y='24' width='30' fill='#fd7400' height='6'/><rect y='12' fill='#fd7400' width='30' height='6'/></svg>");
   background-size: contain;
 }
+
 
 /* Make the Magic Happen */
 .nav-trigger + label, .site-wrap {

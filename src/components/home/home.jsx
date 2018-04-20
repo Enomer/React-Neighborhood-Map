@@ -59,6 +59,7 @@ const MapWithAMakredInfoWindow = compose(   // Higher Order Component for my goo
             index = {i}
             v={ v }
           />
+
         )
         :
         null
