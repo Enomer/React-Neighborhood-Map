@@ -30,6 +30,7 @@ const MapWithAMakredInfoWindow = compose(   // Higher Order Component for my goo
   withScriptjs,
   withGoogleMap
 )(props => {
+
   return (
     <GoogleMap
       defaultZoom={17}
@@ -57,6 +58,8 @@ const MapWithAMakredInfoWindow = compose(   // Higher Order Component for my goo
             markerLat={ v[1] }
             markerLng={ v[2] }
             fourSquareRequest={ fourSquareRequest }
+            activeIndex = {props.activeIndex}
+            index = {i}
             v={ v }
           />
         )
@@ -74,7 +77,8 @@ class Home extends Component {
     venues: null,   // manages list of the 8 venues nearest to your
     inputChar: '',   // manages the search box state
     venueInfo: null,  // manages info of the venues useful info
-    checked: false    // manages whether side pane is open or not
+    checked: false,    // manages whether side pane is open or not
+    activeIndex: null
   }
 
 
@@ -108,11 +112,12 @@ class Home extends Component {
   }
 
   render() {
-    const {venues, mylat, mylng, inputChar, venueInfo, checked} = this.state
+    const {venues, mylat, mylng, inputChar, venueInfo, checked, activeIndex} = this.state
     let placesInfo = null;
     if (venueInfo) {
       placesInfo = venueInfo
     }
+    console.log(activeIndex)
 
     if (inputChar)  {
       const match = new RegExp(escapeRegExp(inputChar), 'i')    // reg exp finds pattern to match side pane places with search box
@@ -142,10 +147,13 @@ class Home extends Component {
                         <li
                           className="nav-item"
                           key={i}
-                          onClick={() =>
+                          onClick={() => {
+                           console.log('clicked')
                             this.setState({
+                              activeIndex: i,
                               checked: !checked
                             })
+                           }
                           }
                           >
                             <hr></hr>
@@ -173,6 +181,7 @@ class Home extends Component {
             mapElement={<div style={{ height: `100%` }} />}
             venues={venues}
             placesInfo = {placesInfo}
+            activeIndex = {activeIndex}
           />
         </div>
       </main>

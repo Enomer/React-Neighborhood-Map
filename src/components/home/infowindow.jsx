@@ -14,6 +14,39 @@ export default class GoogleMarker extends Component {
     locationType: null
   }
 
+
+  componentWillReceiveProps(nextProps) {
+   // console.log(nextProps.index,this.props.activeIndex,"*******I&^%*&%^%*&%^&%")
+   if (nextProps.activeIndex !== this.props.activeIndex) {
+    // console.log('first if ')
+    if (nextProps.activeIndex === this.props.index) {
+     console.log('second if')
+     console.log("**********************************")
+          console.log("**********************************")
+               console.log("**********************************")
+                    console.log("**********************************")
+                         console.log("**********************************")
+                              console.log("**********************************")
+                                   console.log("**********************************")
+                                        console.log("**********************************")
+                                             console.log("**********************************")
+                                                  console.log("**********************************")
+                                                  console.log('*CONGRATULATIONS')
+
+                                                       console.log("**********************************")
+                                                            console.log("**********************************")
+                                                                 console.log("**********************************")
+                                                                      console.log("**********************************")
+                                                                           console.log("**********************************")
+                                                                                console.log("**********************************")
+                                                                                     console.log("**********************************")
+                                                                                          console.log("**********************************")
+                                                                                               console.log("**********************************")
+     this.onToggleOpen()
+    }
+   }
+  }
+
   onToggleOpen = ()  => {         // manages whether infowindow is open and makes a fetch call for details of this particular venue and stores info in state
     if (!this.state.photoInfo) {
       fetch(
@@ -30,7 +63,6 @@ export default class GoogleMarker extends Component {
       )
     })
   }
-
   this.setState({
     isOpen: !this.state.isOpen   // i dont know how i can make this info window of the marker corresponding to the side pane name open when that particular side pane name is clicked
   })
