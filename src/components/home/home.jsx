@@ -60,6 +60,8 @@ const MapWithAMakredInfoWindow = compose(   // Higher Order Component for my goo
             markerLat={ v[1] }
             markerLng={ v[2] }
             fourSquareRequest={ fourSquareRequest }
+            activeIndex = {props.activeIndex}
+            index = {i}
             v={ v }
           />
         )
@@ -79,7 +81,8 @@ class Home extends Component {
     mylng: null,    // your longitude
     inputChar: '',   // manages the search box state
     venueInfo: null,  // manages info of the venues useful info
-    checked: false    // manages whether side pane is open or not
+    checked: false,    // manages whether side pane is open or not
+    activeIndex: null
   }
 
 
@@ -140,7 +143,7 @@ class Home extends Component {
   }
 
   render() {
-    const {venues, mylat, mylng, inputChar, venueInfo, checked} = this.state
+    const {venues, mylat, mylng, inputChar, venueInfo, checked, activeIndex} = this.state
     let placesInfo = null;
     if (venueInfo) {
       placesInfo = venueInfo
@@ -176,6 +179,7 @@ class Home extends Component {
                           key={i}
                           onClick={() =>
                             this.setState({
+                              activeIndex: i,
                               checked: !checked
                             })
                           }
@@ -207,6 +211,7 @@ class Home extends Component {
             mylat={mylat}
             mylng={mylng}
             placesInfo = {placesInfo}
+            activeIndex = {activeIndex}
           />
         </div>
       </main>

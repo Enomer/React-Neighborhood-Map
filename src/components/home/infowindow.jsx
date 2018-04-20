@@ -14,6 +14,15 @@ export default class GoogleMarker extends Component {
     locationType: null
   }
 
+
+  componentWillReceiveProps(nextProps) {  // this will make the side pane name clicked activate the corresponding name's google marker info window, opening it
+    if (nextProps.activeIndex !== this.props.activeIndex) {
+     if (nextProps.activeIndex === this.props.index) {
+      this.onToggleOpen()
+     }
+    }
+   }
+
   onToggleOpen = ()  => {         // manages whether infowindow is open and makes a fetch call for details of this particular venue and stores info in state
     if (!this.state.photoInfo) {
       fetch(
