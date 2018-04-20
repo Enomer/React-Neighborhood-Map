@@ -6,13 +6,10 @@ const {
   withScriptjs,
   withGoogleMap,
   GoogleMap,
-  Marker,
 } = require("react-google-maps");
 const fancyMapStyles = require("./fancyMapStyles.json");
 
-const callback = (err, data) => {
-  // if (data) return
-  // console.log(`Venues Near You: ${data.response.venues.map(venue => `${venue.name}\n`).splice(0,8)}`)
+const callback = (data, err) => {
   if (err) return
   console.log(`${err}`)
 }
@@ -33,7 +30,7 @@ const MapWithAMakredInfoWindow = compose(   // Higher Order Component for my goo
 
   return (
     <GoogleMap
-      defaultZoom={17}
+      defaultZoom={19}
       defaultOptions={{
         styles: fancyMapStyles,
         streetViewControl: false,
@@ -112,12 +109,11 @@ class Home extends Component {
   }
 
   render() {
-    const {venues, mylat, mylng, inputChar, venueInfo, checked, activeIndex} = this.state
+    const {venues, inputChar, venueInfo, checked, activeIndex} = this.state
     let placesInfo = null;
     if (venueInfo) {
       placesInfo = venueInfo
     }
-    console.log(activeIndex)
 
     if (inputChar)  {
       const match = new RegExp(escapeRegExp(inputChar), 'i')    // reg exp finds pattern to match side pane places with search box
@@ -156,21 +152,22 @@ class Home extends Component {
                            }
                           }
                           >
-                            <hr></hr>
-                            <p id="placesInfo">{placesInfo.map(v => v[0])[i]}</p>
-                          </li>
-                        )
-                      }
-                    )
-                    :
-                    null
-                  }
-                </ul>
-              </div>
-            </section>
-
-          </ul>
-          <input onClick={() => this.setState({checked: !checked})} type="checkbox" checked={checked} id="nav-trigger" className="nav-trigger" />
+                          <hr></hr>
+                          <p id="placesInfo ">{placesInfo.map(v =>
+                            v[0])[i]}
+                          </p>
+                        </li>
+                      )
+                    }
+                  )
+                  :
+                  null
+                }
+              </ul>
+            </div>
+          </section>
+        </ul>
+          <input onClick={() => this.setState({checked: !checked})} type="checkbox" checked={checked} id="nav-trigger" className="nav-trigger " />
           <label htmlFor="nav-trigger"></label>
 
           <div className="site-wrap">

@@ -16,32 +16,8 @@ export default class GoogleMarker extends Component {
 
 
   componentWillReceiveProps(nextProps) {
-   // console.log(nextProps.index,this.props.activeIndex,"*******I&^%*&%^%*&%^&%")
    if (nextProps.activeIndex !== this.props.activeIndex) {
-    // console.log('first if ')
     if (nextProps.activeIndex === this.props.index) {
-     console.log('second if')
-     console.log("**********************************")
-          console.log("**********************************")
-               console.log("**********************************")
-                    console.log("**********************************")
-                         console.log("**********************************")
-                              console.log("**********************************")
-                                   console.log("**********************************")
-                                        console.log("**********************************")
-                                             console.log("**********************************")
-                                                  console.log("**********************************")
-                                                  console.log('*CONGRATULATIONS')
-
-                                                       console.log("**********************************")
-                                                            console.log("**********************************")
-                                                                 console.log("**********************************")
-                                                                      console.log("**********************************")
-                                                                           console.log("**********************************")
-                                                                                console.log("**********************************")
-                                                                                     console.log("**********************************")
-                                                                                          console.log("**********************************")
-                                                                                               console.log("**********************************")
      this.onToggleOpen()
     }
    }
@@ -77,6 +53,8 @@ render() {
       position={{ lat: markerLat, lng: markerLng }}
       defaultAnimation={google.maps.Animation.DROP}   // i have no clue how to animate bounce on click with react google maps couldnt find an answer anywhere
       onClick={this.onToggleOpen}
+      // className={isOpen ? "pulseDrag" : null}
+      className="pulseDrag"
       icon={{
         url:"http://www.myiconfinder.com/uploads/iconsets/48-48-7a195b78d9607a48fb234f98634fa5ea-pin.png"
       }}
